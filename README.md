@@ -2,7 +2,7 @@
  An XML editor to mass replace objects inside halo infinite forge's maps but all object ids are converted to a name equivilent.
 
 Replace for retail currently:
-- will delete your folder structure to allow objects to be renamed, this will not affect any of your objects in any way but visual (it will remove any folders you have set up)
+- will delete your folder structure to allow objects to be renamed, this will not affect any of your objects in any way but visual (it will remove any folders you have set up) this will cause your game to have to regenerate any data structure, so it may take a while to load the first time.
 - Changes all forerunner primitives to their generic equivalent.
 - Changes all FX objects into pointers.
 - Changes all grass objects into pointers.
