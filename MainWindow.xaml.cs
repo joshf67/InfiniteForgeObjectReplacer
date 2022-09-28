@@ -72,15 +72,23 @@ namespace ObjectReplacer
         private void btnReplaceObject_Click(object sender, RoutedEventArgs e)
         {
             if (FilePath is "" or "Please load an XML file")
-                throw new Exception("Incorrect file path");
+            {
+                MessageBoxResult messageBoxLoad = System.Windows.MessageBox.Show("Please load a valid XML file", "Continue", System.Windows.MessageBoxButton.OK);
+                return;
+            }
 
             ReplaceType.Convert(FilePath, new []{ (ObjectToReplace, Replacer)});
+            
+            MessageBoxResult messageBoxResult = System.Windows.MessageBox.Show("Your file has been modified", "Continue", System.Windows.MessageBoxButton.OK);
         }
 
         private void btnReplaceForRetail_Click(object sender, RoutedEventArgs e)
         {
             if (FilePath is "" or "Please load an XML file")
-                throw new Exception("Incorrect file path");
+            {
+                MessageBoxResult messageBoxLoad = System.Windows.MessageBox.Show("Please load a valid XML file", "Continue", System.Windows.MessageBoxButton.OK);
+                return;
+            }
 
             List<(ObjectId ObjectToReplace, ObjectId Replacer)> replacers =
                 new List<(ObjectId ObjectToReplace, ObjectId Replacer)>();
@@ -108,22 +116,25 @@ namespace ObjectReplacer
                 }
             }
 
-            replacers.Add((ObjectId.FORERUNNER_CONE, ObjectId.POINTER));
-            replacers.Add((ObjectId.FORERUNNER_BLOCK, ObjectId.POINTER));
-            replacers.Add((ObjectId.FORERUNNER_CYLINDER, ObjectId.POINTER));
-            replacers.Add((ObjectId.FORERUNNER_PYRAMID, ObjectId.POINTER));
-            replacers.Add((ObjectId.FORERUNNER_RING_FULL, ObjectId.POINTER));
-            replacers.Add((ObjectId.FORERUNNER_RING_HALF, ObjectId.POINTER));
-            replacers.Add((ObjectId.FORERUNNER_RING_EIGHTH, ObjectId.POINTER));
-            replacers.Add((ObjectId.FORERUNNER_SPHERE, ObjectId.POINTER));
-            replacers.Add((ObjectId.FORERUNNER_TRAPEZOID, ObjectId.POINTER));
-            replacers.Add((ObjectId.FORERUNNER_TRIANGLE, ObjectId.POINTER));
+            replacers.Add((ObjectId.FORERUNNER_CONE, ObjectId.PRIMITIVE_CONE));
+            replacers.Add((ObjectId.FORERUNNER_BLOCK, ObjectId.PRIMITIVE_BLOCK));
+            replacers.Add((ObjectId.FORERUNNER_CYLINDER, ObjectId.PRIMITIVE_CYLINDER));
+            replacers.Add((ObjectId.FORERUNNER_PYRAMID, ObjectId.PRIMITIVE_PYRAMID));
+            replacers.Add((ObjectId.FORERUNNER_RING_FULL, ObjectId.PRIMITIVE_RING_FULL));
+            replacers.Add((ObjectId.FORERUNNER_RING_HALF, ObjectId.PRIMITIVE_RING_HALF));
+            replacers.Add((ObjectId.FORERUNNER_RING_QUARTER, ObjectId.PRIMITIVE_RING_QUARTER));
+            replacers.Add((ObjectId.FORERUNNER_RING_EIGHTH, ObjectId.PRIMITIVE_RING_EIGHTH));
+            replacers.Add((ObjectId.FORERUNNER_SPHERE, ObjectId.PRIMITIVE_SPHERE));
+            replacers.Add((ObjectId.FORERUNNER_TRAPEZOID, ObjectId.PRIMITIVE_TRAPEZOID));
+            replacers.Add((ObjectId.FORERUNNER_TRIANGLE, ObjectId.PRIMITIVE_TRIANGLE));
             
             ReplaceType.Convert(FilePath, replacers.ToArray());
 
             var xml = XDocument.Load(FilePath);
             XMLHelper.GetFolderStruct(xml)?.Remove();
             xml.Save(FilePath);
+            
+            MessageBoxResult messageBoxResult = System.Windows.MessageBox.Show("Your file has been modified", "Continue", System.Windows.MessageBoxButton.OK);
         }
     }
 }
