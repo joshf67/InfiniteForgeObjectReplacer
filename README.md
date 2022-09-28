@@ -6,6 +6,7 @@ Replace for retail currently:
 - Changes all forerunner primitives to their generic equivalent.
 - Changes all FX objects into pointers.
 - Changes all grass objects into pointers.
+- Changes as many MP blocks as possible into non-MP as possible.
 
 Replace object currently:
 - Allows you to replace 1 object type at a time to another, E.G PRIMITIVE_CUBE to FORERUNNER_CUBE
