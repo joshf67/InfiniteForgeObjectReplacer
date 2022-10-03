@@ -4,7 +4,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using InfiniteForgeConstants.ObjectSettings;
 
-namespace ObjectReplacer;
+namespace InfiniteReplacer;
 
 public class FilterComboBox : ComboBox
 {

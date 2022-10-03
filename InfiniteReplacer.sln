@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObjectReplacer", "ObjectReplacer.csproj", "{67D933A7-2016-4EA0-93AF-2FA543BCCCE3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InfiniteReplacer", "InfiniteReplacer.csproj", "{67D933A7-2016-4EA0-93AF-2FA543BCCCE3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

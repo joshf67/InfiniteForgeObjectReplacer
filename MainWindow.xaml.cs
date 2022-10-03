@@ -15,12 +15,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Xml.Linq;
+using InfiniteForgeConstants.MaterialSettings.Grime;
+using InfiniteForgeConstants.MaterialSettings.Region;
 using InfiniteForgeConstants.ObjectSettings;
 using InfiniteForgePacker.XML;
 using InfiniteForgePacker.XML.Application;
 using Microsoft.Win32;
 
-namespace ObjectReplacer
+namespace InfiniteReplacer
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -36,6 +38,7 @@ namespace ObjectReplacer
             set{SetValue(FilePathProperty,value);}
         }
         
+        //Object
         public static readonly DependencyProperty ObjectToReplaceProperty 
             = DependencyProperty.Register("ObjectToReplace", typeof(ObjectId), typeof(MainWindow));
 
@@ -45,13 +48,60 @@ namespace ObjectReplacer
             set{SetValue(ObjectToReplaceProperty,value);}
         }
         
-        public static readonly DependencyProperty ReplacerProperty 
-            = DependencyProperty.Register("Replacer", typeof(ObjectId), typeof(MainWindow));
+        public static readonly DependencyProperty ObjectReplacerProperty 
+            = DependencyProperty.Register("ObjectReplacer", typeof(ObjectId), typeof(MainWindow));
 
-        public ObjectId Replacer
+        public ObjectId ObjectReplacer
         {
-            get{return (ObjectId)GetValue(ReplacerProperty);}
-            set{SetValue(ReplacerProperty,value);}
+            get{return (ObjectId)GetValue(ObjectReplacerProperty);}
+            set{SetValue(ObjectReplacerProperty,value);}
+        }     
+        
+        //Material
+        public static readonly DependencyProperty MaterialToReplaceProperty 
+            = DependencyProperty.Register("MaterialToReplace", typeof(SwatchIdCombination), typeof(MainWindow));
+        
+        public SwatchIdCombination MaterialToReplace
+        {
+            get{return (SwatchIdCombination)GetValue(MaterialToReplaceProperty);}
+            set{SetValue(MaterialToReplaceProperty,value);}
+        }
+                
+        public static readonly DependencyProperty MaterialReplacerProperty 
+            = DependencyProperty.Register("MaterialReplacer", typeof(SwatchIdCombination), typeof(MainWindow));
+        
+        public SwatchIdCombination MaterialReplacer
+        {
+            get{return (SwatchIdCombination)GetValue(MaterialReplacerProperty);}
+            set{SetValue(MaterialReplacerProperty,value);}
+        }     
+                
+        //Grime
+        public static readonly DependencyProperty GrimeToReplaceProperty 
+            = DependencyProperty.Register("GrimeToReplace", typeof(GrimeIdCombination), typeof(MainWindow));
+                        
+        public GrimeIdCombination GrimeToReplace
+        {
+            get{return (GrimeIdCombination)GetValue(GrimeToReplaceProperty);}
+            set{SetValue(GrimeToReplaceProperty,value);}
+        }
+                                
+        public static readonly DependencyProperty GrimeReplacerProperty 
+            = DependencyProperty.Register("GrimeReplacer", typeof(GrimeIdCombination), typeof(MainWindow));
+                        
+        public GrimeIdCombination GrimeReplacer
+        {
+            get{return (GrimeIdCombination)GetValue(GrimeReplacerProperty);}
+            set{SetValue(GrimeReplacerProperty,value);}
+        }     
+        
+        public static readonly DependencyProperty BiomeReplacerProperty 
+            = DependencyProperty.Register("BiomeReplacer", typeof(Biome), typeof(MainWindow));
+                        
+        public Biome BiomeReplacer
+        {
+            get{return (Biome)GetValue(BiomeReplacerProperty);}
+            set{SetValue(BiomeReplacerProperty,value);}
         }     
         
         public MainWindow()
@@ -73,11 +123,52 @@ namespace ObjectReplacer
         {
             if (FilePath is "" or "Please load an XML file")
             {
-                MessageBoxResult messageBoxLoad = System.Windows.MessageBox.Show("Please load a valid XML file", "Continue", System.Windows.MessageBoxButton.OK);
+                MessageBoxResult messageBoxLoad = System.Windows.MessageBox.Show("Please load a valid XML file",
+                    "Continue", System.Windows.MessageBoxButton.OK);
                 return;
             }
 
-            ReplaceType.Convert(FilePath, new []{ (ObjectToReplace, Replacer)});
+            Replacer.ConvertType(FilePath, new[] { (ObjectToReplace, ObjectReplacer) });
+
+            MessageBoxResult messageBoxResult = System.Windows.MessageBox.Show("Your file has been modified",
+                "Continue", System.Windows.MessageBoxButton.OK);
+        }
+
+        private void btnReplaceBiomesObjects_Click(object sender, RoutedEventArgs e)
+        {
+            if (FilePath is "" or "Please load an XML file")
+            {
+                MessageBoxResult messageBoxLoad = System.Windows.MessageBox.Show("Please load a valid XML file", "Continue", System.Windows.MessageBoxButton.OK);
+                return;
+            }
+            
+            List<(ObjectId ObjectToReplace, ObjectId Replacer)> replacers =
+                new List<(ObjectId ObjectToReplace, ObjectId Replacer)>();
+            
+            var toReplaceName = Enum.GetName(typeof(Biome), BiomeReplacer);
+            
+            if (toReplaceName is null) 
+            {
+                MessageBoxResult messageBoxLoad = System.Windows.MessageBox.Show("Please enter a valid Biome type", "Continue", System.Windows.MessageBoxButton.OK);
+                return;
+            }
+            
+            foreach (var objectIdName in Enum.GetNames(typeof(ObjectId)))
+            {
+                foreach (var biomeName in Enum.GetNames(typeof(Biome)))
+                {
+                    if (biomeName == toReplaceName || !objectIdName.Contains(biomeName)) continue;
+                    
+                    var nameWithNewBiome = objectIdName.Replace(biomeName, toReplaceName);
+                    ObjectId replacerId;
+                    if (ObjectId.TryParse(nameWithNewBiome, out replacerId))
+                    {
+                        replacers.Add(((ObjectId)Enum.Parse(typeof(ObjectId), objectIdName), replacerId));
+                    }
+                }
+            }
+
+            Replacer.ConvertType(FilePath, replacers.ToArray());
             
             MessageBoxResult messageBoxResult = System.Windows.MessageBox.Show("Your file has been modified", "Continue", System.Windows.MessageBoxButton.OK);
         }
@@ -128,11 +219,37 @@ namespace ObjectReplacer
             replacers.Add((ObjectId.FORERUNNER_TRAPEZOID, ObjectId.PRIMITIVE_TRAPEZOID));
             replacers.Add((ObjectId.FORERUNNER_TRIANGLE, ObjectId.PRIMITIVE_TRIANGLE));
             
-            ReplaceType.Convert(FilePath, replacers.ToArray());
+            //.ConvertType(FilePath, replacers.ToArray());
 
             var xml = XDocument.Load(FilePath);
             XMLHelper.GetFolderStruct(xml)?.Remove();
             xml.Save(FilePath);
+            
+            MessageBoxResult messageBoxResult = System.Windows.MessageBox.Show("Your file has been modified", "Continue", System.Windows.MessageBoxButton.OK);
+        }
+        
+        private void btnReplaceMaterialObject_Click(object sender, RoutedEventArgs e)
+        {
+            if (FilePath is "" or "Please load an XML file")
+            {
+                MessageBoxResult messageBoxLoad = System.Windows.MessageBox.Show("Please load a valid XML file", "Continue", System.Windows.MessageBoxButton.OK);
+                return;
+            }
+
+            Replacer.ConvertMaterial(FilePath, new []{ ((int)MaterialToReplace, (int)MaterialReplacer)});
+            
+            MessageBoxResult messageBoxResult = System.Windows.MessageBox.Show("Your file has been modified", "Continue", System.Windows.MessageBoxButton.OK);
+        }
+        
+        private void btnReplaceGrimeObject_Click(object sender, RoutedEventArgs e)
+        {
+            if (FilePath is "" or "Please load an XML file")
+            {
+                MessageBoxResult messageBoxLoad = System.Windows.MessageBox.Show("Please load a valid XML file", "Continue", System.Windows.MessageBoxButton.OK);
+                return;
+            }
+
+            Replacer.ConvertGrime(FilePath, new []{ ((int)GrimeToReplace, (int)GrimeReplacer)});
             
             MessageBoxResult messageBoxResult = System.Windows.MessageBox.Show("Your file has been modified", "Continue", System.Windows.MessageBoxButton.OK);
         }
