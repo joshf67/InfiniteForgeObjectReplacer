@@ -1,3 +1,5 @@
+## This project has been archived as no work has been done on it ever since 343's stance on user generated content was published on forge release
+
 # InfiniteForgeXMLReplacer
  An XML editor to mass replace objects, material and grime inside halo infinite forge's maps but all ids are converted to a name equivilent.
 
